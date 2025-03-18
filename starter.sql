@@ -1,83 +1,84 @@
 -- Create a database for pagination examples
--- Run this command separately: CREATE DATABASE "PaginationExample";
+-- Run this command separately: CREATE DATABASE PaginationExample;
 -- Then connect to the database and run the rest of the script
 
 -- Create a table named 'Movies'
-CREATE TABLE "Movies" (
-    "MovieID" SERIAL PRIMARY KEY,
-    "Title" VARCHAR(255) NOT NULL,
-    "Description" TEXT,
-    "ReleaseYear" INT,
-    "Director" VARCHAR(100),
-    "Genre" VARCHAR(50),
-    "Rating" DECIMAL(3, 1),
-    "Runtime" INT, -- in minutes
-    "BoxOffice" DECIMAL(12, 2), -- in dollars
-    "CreatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE Movies (
+    MovieID INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Description TEXT,
+    ReleaseYear INT,
+    Director VARCHAR(100),
+    Genre VARCHAR(50),
+    Rating DECIMAL(3, 1),
+    Runtime INT, -- in minutes
+    BoxOffice DECIMAL(12, 2), -- in dollars
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Insert a decent amount of rows (e.g., 5000)
-DO $$
-DECLARE
-    i INT := 1;
-    title_prefix TEXT;
-    random_year INT;
-    random_director TEXT;
-    random_genre TEXT;
-    random_rating DECIMAL(3, 1);
-    random_runtime INT;
-    random_boxoffice DECIMAL(12, 2);
+DELIMITER //
+CREATE PROCEDURE InsertMovies()
 BEGIN
-    WHILE i <= 5000 LOOP
+    DECLARE i INT DEFAULT 1;
+    DECLARE title_prefix TEXT;
+    DECLARE random_year INT;
+    DECLARE random_director TEXT;
+    DECLARE random_genre TEXT;
+    DECLARE random_rating DECIMAL(3, 1);
+    DECLARE random_runtime INT;
+    DECLARE random_boxoffice DECIMAL(12, 2);
+    
+    WHILE i <= 5000 DO
         -- Generate random title prefix
-        CASE 
-            WHEN RANDOM() < 0.2 THEN title_prefix := 'The Adventures of';
-            WHEN RANDOM() < 0.4 THEN title_prefix := 'Return to';
-            WHEN RANDOM() < 0.6 THEN title_prefix := 'Mystery of';
-            WHEN RANDOM() < 0.8 THEN title_prefix := 'Journey to';
-            ELSE title_prefix := 'Chronicles of';
-        END CASE;
+        SET title_prefix = CASE 
+            WHEN RAND() < 0.2 THEN 'The Adventures of'
+            WHEN RAND() < 0.4 THEN 'Return to'
+            WHEN RAND() < 0.6 THEN 'Mystery of'
+            WHEN RAND() < 0.8 THEN 'Journey to'
+            ELSE 'Chronicles of'
+        END;
         
         -- Generate random year between 1950 and 2025
-        random_year := 1950 + FLOOR(RANDOM() * 76);
+        SET random_year = 1950 + FLOOR(RAND() * 76);
         
         -- Generate random director
-        CASE 
-            WHEN RANDOM() < 0.1 THEN random_director := 'Steven Spielberg';
-            WHEN RANDOM() < 0.2 THEN random_director := 'Christopher Nolan';
-            WHEN RANDOM() < 0.3 THEN random_director := 'Quentin Tarantino';
-            WHEN RANDOM() < 0.4 THEN random_director := 'Martin Scorsese';
-            WHEN RANDOM() < 0.5 THEN random_director := 'James Cameron';
-            WHEN RANDOM() < 0.6 THEN random_director := 'Greta Gerwig';
-            WHEN RANDOM() < 0.7 THEN random_director := 'Ava DuVernay';
-            WHEN RANDOM() < 0.8 THEN random_director := 'Bong Joon-ho';
-            WHEN RANDOM() < 0.9 THEN random_director := 'Denis Villeneuve';
-            ELSE random_director := 'Kathryn Bigelow';
-        END CASE;
+        SET random_director = CASE 
+            WHEN RAND() < 0.1 THEN 'Steven Spielberg'
+            WHEN RAND() < 0.2 THEN 'Christopher Nolan'
+            WHEN RAND() < 0.3 THEN 'Quentin Tarantino'
+            WHEN RAND() < 0.4 THEN 'Martin Scorsese'
+            WHEN RAND() < 0.5 THEN 'James Cameron'
+            WHEN RAND() < 0.6 THEN 'Greta Gerwig'
+            WHEN RAND() < 0.7 THEN 'Ava DuVernay'
+            WHEN RAND() < 0.8 THEN 'Bong Joon-ho'
+            WHEN RAND() < 0.9 THEN 'Denis Villeneuve'
+            ELSE 'Kathryn Bigelow'
+        END;
         
         -- Generate random genre
-        CASE 
-            WHEN RANDOM() < 0.15 THEN random_genre := 'Action';
-            WHEN RANDOM() < 0.30 THEN random_genre := 'Comedy';
-            WHEN RANDOM() < 0.45 THEN random_genre := 'Drama';
-            WHEN RANDOM() < 0.55 THEN random_genre := 'Sci-Fi';
-            WHEN RANDOM() < 0.65 THEN random_genre := 'Horror';
-            WHEN RANDOM() < 0.75 THEN random_genre := 'Romance';
-            WHEN RANDOM() < 0.85 THEN random_genre := 'Thriller';
-            WHEN RANDOM() < 0.95 THEN random_genre := 'Fantasy';
-            ELSE random_genre := 'Documentary';
-        END CASE;
+        SET random_genre = CASE 
+            WHEN RAND() < 0.15 THEN 'Action'
+            WHEN RAND() < 0.30 THEN 'Comedy'
+            WHEN RAND() < 0.45 THEN 'Drama'
+            WHEN RAND() < 0.55 THEN 'Sci-Fi'
+            WHEN RAND() < 0.65 THEN 'Horror'
+            WHEN RAND() < 0.75 THEN 'Romance'
+            WHEN RAND() < 0.85 THEN 'Thriller'
+            WHEN RAND() < 0.95 THEN 'Fantasy'
+            ELSE 'Documentary'
+        END;
         
         -- Generate random rating between 1.0 and 10.0
-        random_rating := 1.0 + (RANDOM() * 9.0)::DECIMAL(3,1);
+        SET random_rating = 1.0 + (RAND() * 9.0);
         
         -- Generate random runtime between 70 and 210 minutes
-        random_runtime := 70 + FLOOR(RANDOM() * 141);
+        SET random_runtime = 70 + FLOOR(RAND() * 141);
         
         -- Generate random box office between $100,000 and $1,000,000,000
-        random_boxoffice := 100000 + FLOOR(RANDOM() * 999900000);
+        SET random_boxoffice = 100000 + FLOOR(RAND() * 999900000);
         
-        INSERT INTO "Movies" ("Title", "Description", "ReleaseYear", "Director", "Genre", "Rating", "Runtime", "BoxOffice") VALUES (
+        INSERT INTO Movies (Title, Description, ReleaseYear, Director, Genre, Rating, Runtime, BoxOffice) VALUES (
             CONCAT(title_prefix, ' ', 'Movie ', i),
             CONCAT('This captivating film follows the story of extraordinary characters in a ', random_genre, ' setting. Directed by ', random_director, ' in ', random_year, '.'),
             random_year,
@@ -87,10 +88,14 @@ BEGIN
             random_runtime,
             random_boxoffice
         );
-        i := i + 1;
-    END LOOP;
-END $$;
+        SET i = i + 1;
+    END WHILE;
+END //
+DELIMITER ;
+
+-- Execute the procedure
+CALL InsertMovies();
 
 -- Verify the data
-SELECT COUNT(*) FROM "Movies";
-SELECT * FROM "Movies" LIMIT 10; -- Show a few rows
+SELECT COUNT(*) FROM Movies;
+SELECT * FROM Movies LIMIT 10; -- Show a few rows
